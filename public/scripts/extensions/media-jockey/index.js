@@ -1,4 +1,4 @@
-import {chat, eventSource, event_types, sendTextareaMessage} from '../../../script.js';
+import { chat, eventSource, event_types, sendTextareaMessage } from '../../../script.js';
 
 const sendTextarea = document.querySelector('#send_textarea');
 
@@ -13,12 +13,7 @@ function speak(text) {
     }, '*');
 }
 
-function postChat(){
-    const textContent = $('.mes_text');
-    textContent.unbind('dblclick');
-    textContent.on('dblclick', (e) => {
-        speak($(e.target).text());
-    });
+function postChat() {
     window.parent.postMessage({
         action: 'chat.all',
         data: chat,
@@ -35,14 +30,31 @@ eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, () => {
 });
 
 window.addEventListener('message', async (event) => {
-    const {data} = event;
+    const { data } = event;
     log('parent message', data);
     switch (data.action) {
         case 'send.text':
             sendTextarea.value = data.data;
             await sendTextareaMessage();
             break;
+        case 'common.display':
+            if (data.data) {
+                $('#top-bar').show();
+                $('#top-settings-holder').show();
+            }else {
+                $('#top-bar').hide();
+                $('#top-settings-holder').hide();
+            }
+            break;
     }
 }, false);
 
 log('load');
+
+$(document).on('dblclick', (e) => {
+    const target = $(e.target)[0];
+    // console.log('target.localName', target, target.localName);
+    if (target.localName !== 'p') return;
+    // log('speak', target.textContent);
+    speak(target.textContent);
+});
