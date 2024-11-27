@@ -290,10 +290,10 @@
     }
 
     body.waifuMode #sheld {
-        height: 40vh;
-        height: 40dvh;
-        top: 60vh;
-        top: 60dvh;
+        height: 50vh;
+        height: 50dvh;
+        top: 50vh;
+        top: 50dvh;
         bottom: 0 !important;
     }
 
