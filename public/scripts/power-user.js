@@ -63,6 +63,7 @@ export {
     send_on_enter_options,
     getContextSettings,
     applyPowerUserSettings,
+    applyCustomCSS,
 };
 
 export const MAX_CONTEXT_DEFAULT = 8192;

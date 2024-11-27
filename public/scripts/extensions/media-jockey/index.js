@@ -1,4 +1,5 @@
-import { chat, eventSource, event_types, sendTextareaMessage } from '../../../script.js';
+import { chat, eventSource, event_types, sendTextareaMessage, saveSettingsDebounced } from '../../../script.js';
+import { power_user, applyCustomCSS } from '../../power-user.js';
 
 const sendTextarea = document.querySelector('#send_textarea');
 
@@ -24,9 +25,14 @@ eventSource.on(event_types.CHAT_CHANGED, () => {
     postChat();
 });
 
-eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, () => {
+eventSource.on(event_types.MESSAGE_RECEIVED, () => {
     postChat();
     speak(chat[chat.length - 1].mes);
+});
+
+eventSource.on(event_types.STREAM_TOKEN_RECEIVED, (text) => {
+    log(text);
+    // postChat();
 });
 
 window.addEventListener('message', async (event) => {
@@ -41,10 +47,15 @@ window.addEventListener('message', async (event) => {
             if (data.data) {
                 $('#top-bar').show();
                 $('#top-settings-holder').show();
-            }else {
+            } else {
                 $('#top-bar').hide();
                 $('#top-settings-holder').hide();
             }
+            break;
+        case '':
+            power_user.custom_css = String($('#customCSS').val());
+            saveSettingsDebounced();
+            applyCustomCSS();
             break;
     }
 }, false);
@@ -57,4 +68,25 @@ $(document).on('dblclick', (e) => {
     if (target.localName !== 'p') return;
     // log('speak', target.textContent);
     speak(target.textContent);
+});
+
+let t = 0,
+    total = 0;
+$(document).on('mousedown', event => {
+    if (event.button != 2) return;
+    total += 1;
+    if (total === 1) {
+        t = new Date().valueOf();
+    }
+    if (total === 2) {
+        let now = new Date().valueOf();
+        if (now - t < 300) {
+            console.log('右侧双击', event.target.textContent);
+            total = 0;
+            t = 0;
+        } else {
+            total = 1;
+            t = now;
+        }
+    }
 });
