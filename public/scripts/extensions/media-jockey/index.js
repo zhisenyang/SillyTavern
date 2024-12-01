@@ -73,20 +73,28 @@ $(document).on('dblclick', (e) => {
 let t = 0,
     total = 0;
 $(document).on('mousedown', event => {
-    if (event.button != 2) return;
-    total += 1;
-    if (total === 1) {
-        t = new Date().valueOf();
-    }
-    if (total === 2) {
-        let now = new Date().valueOf();
-        if (now - t < 300) {
-            console.log('右侧双击', event.target.textContent);
-            total = 0;
-            t = 0;
-        } else {
-            total = 1;
-            t = now;
+    if (event.button === 2) {
+        total += 1;
+        if (total === 1) {
+            t = new Date().valueOf();
         }
+        if (total === 2) {
+            let now = new Date().valueOf();
+            if (now - t < 300) {
+                console.log('右侧双击', event.target.textContent);
+                total = 0;
+                t = 0;
+            } else {
+                total = 1;
+                t = now;
+            }
+        }
+    } else if (event.button > 2) {
+        const isNext = event.button === 4;
+        const userMesList = $('div[is_user="true"]');
+        const lastUserMes = userMesList[userMesList.length - 1];
+        const chatElement = $('#chat');
+        console.log('$(\'#chat\').scrollTop()', chatElement.scrollTop());
+        chatElement.scrollTop(lastUserMes.offsetTop);
     }
 });
