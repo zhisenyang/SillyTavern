@@ -92,9 +92,15 @@ $(document).on('mousedown', event => {
     } else if (event.button > 2) {
         const isNext = event.button === 4;
         const userMesList = $('div[is_user="true"]');
-        const lastUserMes = userMesList[userMesList.length - 1];
+        // const lastUserMes = userMesList[userMesList.length - 1];
+        const index = userMesList.findIndex(i => i.offsetTop >= chatElement.scrollTop());
+        let nextIndex = index + (isNext ? 1 : -1);
+        if (nextIndex <= 0) {
+            nextIndex = 0;
+        } else if (nextIndex >= userMesList.length) {
+            nextIndex = userMesList.length - 1;
+        }
         const chatElement = $('#chat');
-        console.log('$(\'#chat\').scrollTop()', chatElement.scrollTop());
-        chatElement.scrollTop(lastUserMes.offsetTop);
+        chatElement.scrollTop(userMesList[nextIndex].offsetTop);
     }
 });
