@@ -29,7 +29,7 @@ body.no-blur #send_form {
     margin-bottom: 200px !important;
 }
 
-.mes[is_user*="false"] .mes_text p {
+.mes_text p {
     line-height: 70px;
     font-size: 30px;
     opacity: 0.5;

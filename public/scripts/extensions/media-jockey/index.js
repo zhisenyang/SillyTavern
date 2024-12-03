@@ -1,5 +1,4 @@
-import { chat, eventSource, event_types, sendTextareaMessage, saveSettingsDebounced } from '../../../script.js';
-import { power_user, applyCustomCSS } from '../../power-user.js';
+import { chat, eventSource, event_types, sendTextareaMessage } from '../../../script.js';
 
 const sendTextarea = document.querySelector('#send_textarea');
 
@@ -43,7 +42,9 @@ window.addEventListener('message', async (event) => {
             sendTextarea.value = data.data;
             await sendTextareaMessage();
             break;
-        case 'common.display':
+        case 'common.hover':
+            break;
+        case 'common.menuVisible':
             if (data.data) {
                 $('#top-bar').show();
                 $('#top-settings-holder').show();
@@ -51,11 +52,6 @@ window.addEventListener('message', async (event) => {
                 $('#top-bar').hide();
                 $('#top-settings-holder').hide();
             }
-            break;
-        case '':
-            power_user.custom_css = String($('#customCSS').val());
-            saveSettingsDebounced();
-            applyCustomCSS();
             break;
     }
 }, false);
@@ -81,7 +77,7 @@ $(document).on('mousedown', event => {
         if (total === 2) {
             let now = new Date().valueOf();
             if (now - t < 300) {
-                console.log('右侧双击', event.target.textContent);
+                speak(event.target.textContent);
                 total = 0;
                 t = 0;
             } else {
@@ -90,17 +86,22 @@ $(document).on('mousedown', event => {
             }
         }
     } else if (event.button > 2) {
-        const isNext = event.button === 4;
+        const chatElement = $('#chat');
+        const isNext = event.button === 3;
         const userMesList = $('div[is_user="true"]');
-        // const lastUserMes = userMesList[userMesList.length - 1];
-        const index = userMesList.findIndex(i => i.offsetTop >= chatElement.scrollTop());
+        let index = userMesList.length - 1;
+        for (let i = 0; i < userMesList.length; i++) {
+            if (userMesList[i].offsetTop >= chatElement.scrollTop()) {
+                index = i;
+                break;
+            }
+        }
         let nextIndex = index + (isNext ? 1 : -1);
         if (nextIndex <= 0) {
             nextIndex = 0;
         } else if (nextIndex >= userMesList.length) {
             nextIndex = userMesList.length - 1;
         }
-        const chatElement = $('#chat');
         chatElement.scrollTop(userMesList[nextIndex].offsetTop);
     }
 });
