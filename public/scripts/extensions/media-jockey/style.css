@@ -24,28 +24,40 @@ body.no-blur #send_form {
     border: 0 !important;
 }
 
-.mes[is_user*="false"] {
-    border: 0 !important;
-    margin-bottom: 200px !important;
-}
 
 .mes_text p {
     line-height: 70px;
     font-size: 30px;
-    opacity: 0.5;
     /*font-family: 'STHupo', 'hyzy', sans-serif;*/
 }
 
-.mes_text q {
-    /*color: transparent !important;*/
-    /*font-weight: bolder;*/
-    /*-webkit-text-stroke: 1px #e91e63;*/
-    /*letter-spacing: 1px;*/
+.mes_text p q {
+    opacity: 0.5;
 }
 
-.mes_text em {
-    /*color: transparent !important;*/
+.mes_text p em {
+    opacity: 0.5;
 }
+
+.mes[is_user*="true"] q {
+    color: #1976d2 !important;
+}
+
+.mes[is_user*="false"] {
+    border: 0 !important;
+    margin-bottom: 300px !important;
+}
+
+/*.mes_text q {*/
+/*    color: transparent !important;*/
+/*    font-weight: bolder;*/
+/*    -webkit-text-stroke: 1px #e91e63;*/
+/*    letter-spacing: 1px;*/
+/*}*/
+
+/*.mes_text em {*/
+/*    color: transparent !important;*/
+/*}*/
 
 #send_textarea {
     font-size: 30px;
