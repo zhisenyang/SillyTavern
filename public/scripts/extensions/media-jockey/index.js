@@ -1,5 +1,5 @@
-import { chat, eventSource, event_types, sendTextareaMessage } from '../../../script.js';
-import { loadFileToDocument } from '../../utils.js';
+import {chat, eventSource, event_types, sendTextareaMessage} from '../../../script.js';
+import {loadFileToDocument} from '../../utils.js';
 
 const extensionName = 'media-jockey';
 const extensionFolderPath = `scripts/extensions/${extensionName}/`;
@@ -30,19 +30,31 @@ let status = 2;
 
 eventSource.on(event_types.GENERATION_STARTED, () => {
     status = 0;
+
 });
 
+let lastReceivedLength = 0;
+let lastReceived = null;
+
 eventSource.on(event_types.STREAM_TOKEN_RECEIVED, (text) => {
-    if(status === 0){
+    if (status === 0) {
         status = 1;
-        speakList.length = 0;
     }
-    _.merge(speakList, splitText(text));
-    log(speakList);
+    const tempList = splitText(text);
+    lastReceived = tempList[tempList.length - 1];
+    if (tempList.length === 1)
+        return;
+    if (tempList.length > lastReceivedLength) {
+        speak(tempList[tempList.length - 2])
+    }
+    lastReceivedLength = tempList.length;
 });
 
 eventSource.on(event_types.GENERATION_ENDED, () => {
     status = 2;
+    speak(lastReceived);
+    lastReceivedLength = 0;
+    lastReceived = null;
 });
 
 let config = {
@@ -52,8 +64,8 @@ let config = {
 };
 
 window.addEventListener('message', async (event) => {
-    const { data } = event;
-    log('parent message', data);
+    const {data} = event;
+    // log('parent message', data);
     switch (data.action) {
         case 'send.text':
             sendTextarea.value = data.data;
@@ -62,6 +74,9 @@ window.addEventListener('message', async (event) => {
         case 'common.hover':
             break;
         case 'tts.build':
+            speakList.push(data.data);
+            if (!speaking)
+                audioRef.onpause();
             break;
         case 'config.change':
             config = data.data;
@@ -110,7 +125,9 @@ $(document).on('mousedown', event => {
                 lastSpeakEl = $(event.target);
                 lastSpeakMes = lastSpeakEl.closest('.mes');
                 lastSpeakChat = chat[lastSpeakMes.attr('mesid')];
-                speak(lastSpeakEl.text());
+                for (const text of splitText(lastSpeakEl.text())) {
+                    speak(text);
+                }
                 total = 0;
                 t = 0;
             } else {
@@ -164,26 +181,13 @@ function splitText(text) {
 }
 
 
-function speak(text) {
-    let lineList = splitText(text.replaceAll('*', ''));
-    if (!config.speakVoiceover)
-        lineList = lineList.filter((i) => i.hasQuotes);
-    for (const line of lineList) {
-        window.parent.postMessage({
-            action: 'tts.build',
-            data: line.text,
-        }, '*');
-    }
-    // for (const str of textList) {
-    //     const data = await soundService.tts({
-    //         dir: chatList.value[0].name,
-    //         text: str,
-    //     });
-    //     speakList.push(data);
-    //     if (!playing.value) {
-    //         audioRef.value!.onpause();
-    //     }
-    // }
+function speak(line) {
+    if (!config.speakVoiceover && !line.hasQuotes)
+        return;
+    window.parent.postMessage({
+        action: 'tts.build',
+        data: line.text.replaceAll('*', ''),
+    }, '*');
 }
 
 
