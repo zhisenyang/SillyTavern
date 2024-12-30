@@ -65,7 +65,7 @@ let config = {
 
 window.addEventListener('message', async (event) => {
     const {data} = event;
-    // log('parent message', data);
+    log('parent message', data);
     switch (data.action) {
         case 'send.text':
             sendTextarea.value = data.data;
@@ -79,7 +79,7 @@ window.addEventListener('message', async (event) => {
                 audioRef.onpause();
             break;
         case 'config.change':
-            config = data.data;
+            config = JSON.parse(data.data);
             if (config.showMenu) {
                 $('#top-bar').show();
                 $('#top-settings-holder').show();
