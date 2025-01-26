@@ -29,6 +29,7 @@ body.no-blur #send_form {
     line-height: 70px;
     font-size: 30px;
     /*font-family: 'STHupo', 'hyzy', sans-serif;*/
+    opacity: 0.5;
 }
 
 .mes_text p q {
@@ -45,7 +46,7 @@ body.no-blur #send_form {
 
 .mes[is_user*="false"] {
     border: 0 !important;
-    margin-bottom: 300px !important;
+    /*margin-bottom: 300px !important;*/
 }
 
 /*.mes_text q {*/
